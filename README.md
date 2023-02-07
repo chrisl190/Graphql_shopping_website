@@ -17,3 +17,7 @@ Runs the [Graphql Codegen](https://graphql-code-generator.com/) to generate the 
 ### `yarn start`
 
 Runs the app which can be viewed in the browser http://localhost:3000.
+
+
+https://user-images.githubusercontent.com/78232169/217306340-82720e9a-5561-4b19-a967-649699e97f43.mov
+
