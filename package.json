@@ -1,0 +1,62 @@
+{
+  "name": "graphql_shopping_website",
+  "version": "1.0.0",
+  "private": true,
+  "homepage": "https://github.com/chrisl190/Graphql_shopping_website",
+  "dependencies": {
+    "@apollo/react-components": "^3.1.3",
+    "@apollo/react-hoc": "^3.1.3",
+    "@apollo/react-hooks": "^3.1.3",
+    "@material-ui/core": "^4.9.4",
+    "@testing-library/jest-dom": "^5.1.1",
+    "@testing-library/react": "^9.4.1",
+    "@testing-library/user-event": "^10.0.0",
+    "@types/jest": "^25.1.3",
+    "@types/node": "^13.7.4",
+    "@types/react": "^16.9.22",
+    "@types/react-dom": "^16.9.5",
+    "apollo-cache": "^1.3.4",
+    "apollo-cache-inmemory": "^1.6.5",
+    "apollo-client": "^2.6.8",
+    "apollo-link": "^1.2.13",
+    "apollo-link-error": "^1.1.12",
+    "apollo-link-http": "^1.5.16",
+    "apollo-utilities": "^1.3.3",
+    "graphql": "^14.6.0",
+    "graphql-tag": "^2.10.3",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "react-scripts": "3.4.0",
+    "typescript": "~3.8.2"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "gen-graphql": "graphql-codegen --config codegen.yml"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@graphql-codegen/cli": "^1.12.2",
+    "@graphql-codegen/fragment-matcher": "1.12.2",
+    "@graphql-codegen/typescript": "1.12.2",
+    "@graphql-codegen/typescript-operations": "1.12.2",
+    "@graphql-codegen/typescript-react-apollo": "1.12.2",
+    "eslint-config-prettier": "^6.10.0",
+    "eslint-plugin-prettier": "^3.1.2",
+    "gh-pages": "^2.2.0",
+    "prettier": "^1.19.1"
+  }
+}
