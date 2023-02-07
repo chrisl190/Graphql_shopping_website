@@ -1,19 +1,21 @@
 import React, { ReactElement } from 'react';
+import { Character, Maybe } from '../generated/graphql';
 import {
   TableRow,
   TableCell,
-  Box,
-  createStyles,
-  Theme,
   makeStyles,
+  Theme,
+  createStyles,
+  Box,
   Typography,
 } from '@material-ui/core';
+import CharacterQuantity from './characterQuantity';
 
-interface characterDataTypes {
+interface CharacterDataType {
   character: any;
 }
 
-export default function CharacterData({character}: characterDataTypes): ReactElement {
+export default function CharacterData({ character }: CharacterDataType): ReactElement {
   const classes = useStyles();
 
   return (
@@ -29,6 +31,13 @@ export default function CharacterData({character}: characterDataTypes): ReactEle
       <TableCell>{character?.species}</TableCell>
       <TableCell>{character?.origin?.name}</TableCell>
       <TableCell>{character?.location?.name}</TableCell>
+      <TableCell>{'£' + character?.unitPrice}</TableCell>
+      <TableCell>
+        <CharacterQuantity
+          characterId={character?.id!}
+          chosenQuantity={character?.chosenQuantity!}
+        />
+      </TableCell>
     </TableRow>
   );
 }

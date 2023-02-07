@@ -10,8 +10,8 @@ import {
   Typography,
 } from '@material-ui/core';
 import React, { ReactElement } from 'react';
-import { useGetCharactersQuery } from '../../generated/graphql';
-import CharacterData from '../character-data/character-data';
+import { useGetCharactersQuery } from '../generated/graphql';
+import CharacterData from './characterData';
 
 export default function CharacterTable(): ReactElement {
   const { data, loading, error } = useGetCharactersQuery();
@@ -46,6 +46,12 @@ export default function CharacterTable(): ReactElement {
             </TableCell>
             <TableCell>
               <strong>Location</strong>
+            </TableCell>
+            <TableCell>
+              <strong>Price</strong>
+            </TableCell>
+            <TableCell>
+              <strong>Quantity</strong>
             </TableCell>
           </TableRow>
         </TableHead>

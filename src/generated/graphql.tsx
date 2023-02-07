@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
-import * as React from 'react';
 import * as ApolloReactCommon from '@apollo/react-common';
+import * as React from 'react';
 import * as ApolloReactComponents from '@apollo/react-components';
 import * as ApolloReactHoc from '@apollo/react-hoc';
 import * as ApolloReactHooks from '@apollo/react-hooks';
@@ -21,19 +21,25 @@ export enum CacheControlScope {
   Private = 'PRIVATE'
 }
 
+export type ChangeProductQuantity = {
+  id: Scalars['ID'],
+};
+
 export type Character = {
    __typename?: 'Character',
-  id?: Maybe<Scalars['ID']>,
-  name?: Maybe<Scalars['String']>,
-  status?: Maybe<Scalars['String']>,
-  species?: Maybe<Scalars['String']>,
-  type?: Maybe<Scalars['String']>,
-  gender?: Maybe<Scalars['String']>,
-  origin?: Maybe<Location>,
-  location?: Maybe<Location>,
-  image?: Maybe<Scalars['String']>,
-  episode: Array<Maybe<Episode>>,
+  chosenQuantity: Scalars['Int'],
   created?: Maybe<Scalars['String']>,
+  episode: Array<Maybe<Episode>>,
+  gender?: Maybe<Scalars['String']>,
+  id?: Maybe<Scalars['ID']>,
+  image?: Maybe<Scalars['String']>,
+  location?: Maybe<Location>,
+  name?: Maybe<Scalars['String']>,
+  origin?: Maybe<Location>,
+  species?: Maybe<Scalars['String']>,
+  status?: Maybe<Scalars['String']>,
+  type?: Maybe<Scalars['String']>,
+  unitPrice: Scalars['Int'],
 };
 
 export type Characters = {
@@ -101,17 +107,35 @@ export type Locations = {
   results?: Maybe<Array<Maybe<Location>>>,
 };
 
+export type Mutation = {
+   __typename?: 'Mutation',
+  increaseChosenQuantity?: Maybe<Scalars['Boolean']>,
+  decreaseChosenQuantity?: Maybe<Scalars['Boolean']>,
+};
+
+
+export type MutationIncreaseChosenQuantityArgs = {
+  input: ChangeProductQuantity
+};
+
+
+export type MutationDecreaseChosenQuantityArgs = {
+  input: ChangeProductQuantity
+};
+
 export type Query = {
    __typename?: 'Query',
   character?: Maybe<Character>,
   characters?: Maybe<Characters>,
   charactersByIds?: Maybe<Array<Maybe<Character>>>,
-  location?: Maybe<Location>,
-  locations?: Maybe<Locations>,
-  locationsByIds?: Maybe<Array<Maybe<Location>>>,
   episode?: Maybe<Episode>,
   episodes?: Maybe<Episodes>,
   episodesByIds?: Maybe<Array<Maybe<Episode>>>,
+  getCharacter?: Maybe<Character>,
+  location?: Maybe<Location>,
+  locations?: Maybe<Locations>,
+  locationsByIds?: Maybe<Array<Maybe<Location>>>,
+  shoppingCart: ShoppingCart,
 };
 
 
@@ -127,22 +151,6 @@ export type QueryCharactersArgs = {
 
 
 export type QueryCharactersByIdsArgs = {
-  ids: Array<Scalars['ID']>
-};
-
-
-export type QueryLocationArgs = {
-  id: Scalars['ID']
-};
-
-
-export type QueryLocationsArgs = {
-  page?: Maybe<Scalars['Int']>,
-  filter?: Maybe<FilterLocation>
-};
-
-
-export type QueryLocationsByIdsArgs = {
   ids: Array<Scalars['ID']>
 };
 
@@ -163,6 +171,62 @@ export type QueryEpisodesByIdsArgs = {
 };
 
 
+export type QueryGetCharacterArgs = {
+  id: Scalars['ID']
+};
+
+
+export type QueryLocationArgs = {
+  id: Scalars['ID']
+};
+
+
+export type QueryLocationsArgs = {
+  page?: Maybe<Scalars['Int']>,
+  filter?: Maybe<FilterLocation>
+};
+
+
+export type QueryLocationsByIdsArgs = {
+  ids: Array<Scalars['ID']>
+};
+
+export type ShoppingCart = {
+   __typename?: 'ShoppingCart',
+  id: Scalars['ID'],
+  totalPrice: Scalars['Int'],
+  numActionFigures: Scalars['Int'],
+};
+
+
+export type CharacterDataFragment = (
+  { __typename: 'Character' }
+  & Pick<Character, 'id' | 'name' | 'unitPrice' | 'chosenQuantity'>
+);
+
+export type DecreaseChosenQuantityMutationVariables = {
+  input: ChangeProductQuantity
+};
+
+
+export type DecreaseChosenQuantityMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'decreaseChosenQuantity'>
+);
+
+export type GetCharacterQueryVariables = {
+  id: Scalars['ID']
+};
+
+
+export type GetCharacterQuery = (
+  { __typename?: 'Query' }
+  & { getCharacter: Maybe<(
+    { __typename?: 'Character' }
+    & CharacterDataFragment
+  )> }
+);
+
 export type GetCharactersQueryVariables = {};
 
 
@@ -172,7 +236,7 @@ export type GetCharactersQuery = (
     { __typename: 'Characters' }
     & { results: Maybe<Array<Maybe<(
       { __typename: 'Character' }
-      & Pick<Character, 'id' | 'name' | 'image' | 'species'>
+      & Pick<Character, 'id' | 'name' | 'image' | 'species' | 'chosenQuantity' | 'unitPrice'>
       & { origin: Maybe<(
         { __typename: 'Location' }
         & Pick<Location, 'id' | 'name'>
@@ -184,7 +248,133 @@ export type GetCharactersQuery = (
   )> }
 );
 
+export type GetShoppingCartQueryVariables = {};
 
+
+export type GetShoppingCartQuery = (
+  { __typename?: 'Query' }
+  & { shoppingCart: (
+    { __typename: 'ShoppingCart' }
+    & Pick<ShoppingCart, 'id' | 'totalPrice' | 'numActionFigures'>
+  ) }
+);
+
+export type IncreaseChosenQuantityMutationVariables = {
+  input: ChangeProductQuantity
+};
+
+
+export type IncreaseChosenQuantityMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'increaseChosenQuantity'>
+);
+
+export const CharacterDataFragmentDoc = gql`
+    fragment characterData on Character {
+  id
+  __typename
+  name
+  unitPrice @client
+  chosenQuantity @client
+}
+    `;
+export const DecreaseChosenQuantityDocument = gql`
+    mutation DecreaseChosenQuantity($input: ChangeProductQuantity!) {
+  decreaseChosenQuantity(input: $input) @client
+}
+    `;
+export type DecreaseChosenQuantityMutationFn = ApolloReactCommon.MutationFunction<DecreaseChosenQuantityMutation, DecreaseChosenQuantityMutationVariables>;
+export type DecreaseChosenQuantityComponentProps = Omit<ApolloReactComponents.MutationComponentOptions<DecreaseChosenQuantityMutation, DecreaseChosenQuantityMutationVariables>, 'mutation'>;
+
+    export const DecreaseChosenQuantityComponent = (props: DecreaseChosenQuantityComponentProps) => (
+      <ApolloReactComponents.Mutation<DecreaseChosenQuantityMutation, DecreaseChosenQuantityMutationVariables> mutation={DecreaseChosenQuantityDocument} {...props} />
+    );
+    
+export type DecreaseChosenQuantityProps<TChildProps = {}> = ApolloReactHoc.MutateProps<DecreaseChosenQuantityMutation, DecreaseChosenQuantityMutationVariables> & TChildProps;
+export function withDecreaseChosenQuantity<TProps, TChildProps = {}>(operationOptions?: ApolloReactHoc.OperationOption<
+  TProps,
+  DecreaseChosenQuantityMutation,
+  DecreaseChosenQuantityMutationVariables,
+  DecreaseChosenQuantityProps<TChildProps>>) {
+    return ApolloReactHoc.withMutation<TProps, DecreaseChosenQuantityMutation, DecreaseChosenQuantityMutationVariables, DecreaseChosenQuantityProps<TChildProps>>(DecreaseChosenQuantityDocument, {
+      alias: 'decreaseChosenQuantity',
+      ...operationOptions
+    });
+};
+
+/**
+ * __useDecreaseChosenQuantityMutation__
+ *
+ * To run a mutation, you first call `useDecreaseChosenQuantityMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDecreaseChosenQuantityMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [decreaseChosenQuantityMutation, { data, loading, error }] = useDecreaseChosenQuantityMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useDecreaseChosenQuantityMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<DecreaseChosenQuantityMutation, DecreaseChosenQuantityMutationVariables>) {
+        return ApolloReactHooks.useMutation<DecreaseChosenQuantityMutation, DecreaseChosenQuantityMutationVariables>(DecreaseChosenQuantityDocument, baseOptions);
+      }
+export type DecreaseChosenQuantityMutationHookResult = ReturnType<typeof useDecreaseChosenQuantityMutation>;
+export type DecreaseChosenQuantityMutationResult = ApolloReactCommon.MutationResult<DecreaseChosenQuantityMutation>;
+export type DecreaseChosenQuantityMutationOptions = ApolloReactCommon.BaseMutationOptions<DecreaseChosenQuantityMutation, DecreaseChosenQuantityMutationVariables>;
+export const GetCharacterDocument = gql`
+    query GetCharacter($id: ID!) {
+  getCharacter(id: $id) @client {
+    ...characterData
+  }
+}
+    ${CharacterDataFragmentDoc}`;
+export type GetCharacterComponentProps = Omit<ApolloReactComponents.QueryComponentOptions<GetCharacterQuery, GetCharacterQueryVariables>, 'query'> & ({ variables: GetCharacterQueryVariables; skip?: boolean; } | { skip: boolean; });
+
+    export const GetCharacterComponent = (props: GetCharacterComponentProps) => (
+      <ApolloReactComponents.Query<GetCharacterQuery, GetCharacterQueryVariables> query={GetCharacterDocument} {...props} />
+    );
+    
+export type GetCharacterProps<TChildProps = {}> = ApolloReactHoc.DataProps<GetCharacterQuery, GetCharacterQueryVariables> & TChildProps;
+export function withGetCharacter<TProps, TChildProps = {}>(operationOptions?: ApolloReactHoc.OperationOption<
+  TProps,
+  GetCharacterQuery,
+  GetCharacterQueryVariables,
+  GetCharacterProps<TChildProps>>) {
+    return ApolloReactHoc.withQuery<TProps, GetCharacterQuery, GetCharacterQueryVariables, GetCharacterProps<TChildProps>>(GetCharacterDocument, {
+      alias: 'getCharacter',
+      ...operationOptions
+    });
+};
+
+/**
+ * __useGetCharacterQuery__
+ *
+ * To run a query within a React component, call `useGetCharacterQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetCharacterQuery` returns an object from Apollo Client that contains loading, error, and data properties 
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetCharacterQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetCharacterQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<GetCharacterQuery, GetCharacterQueryVariables>) {
+        return ApolloReactHooks.useQuery<GetCharacterQuery, GetCharacterQueryVariables>(GetCharacterDocument, baseOptions);
+      }
+export function useGetCharacterLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<GetCharacterQuery, GetCharacterQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<GetCharacterQuery, GetCharacterQueryVariables>(GetCharacterDocument, baseOptions);
+        }
+export type GetCharacterQueryHookResult = ReturnType<typeof useGetCharacterQuery>;
+export type GetCharacterLazyQueryHookResult = ReturnType<typeof useGetCharacterLazyQuery>;
+export type GetCharacterQueryResult = ApolloReactCommon.QueryResult<GetCharacterQuery, GetCharacterQueryVariables>;
 export const GetCharactersDocument = gql`
     query GetCharacters {
   characters {
@@ -195,6 +385,8 @@ export const GetCharactersDocument = gql`
       name
       image
       species
+      chosenQuantity @client
+      unitPrice @client
       origin {
         id
         __typename
@@ -251,6 +443,105 @@ export function useGetCharactersLazyQuery(baseOptions?: ApolloReactHooks.LazyQue
 export type GetCharactersQueryHookResult = ReturnType<typeof useGetCharactersQuery>;
 export type GetCharactersLazyQueryHookResult = ReturnType<typeof useGetCharactersLazyQuery>;
 export type GetCharactersQueryResult = ApolloReactCommon.QueryResult<GetCharactersQuery, GetCharactersQueryVariables>;
+export const GetShoppingCartDocument = gql`
+    query GetShoppingCart {
+  shoppingCart @client {
+    id
+    __typename
+    totalPrice
+    numActionFigures
+  }
+}
+    `;
+export type GetShoppingCartComponentProps = Omit<ApolloReactComponents.QueryComponentOptions<GetShoppingCartQuery, GetShoppingCartQueryVariables>, 'query'>;
+
+    export const GetShoppingCartComponent = (props: GetShoppingCartComponentProps) => (
+      <ApolloReactComponents.Query<GetShoppingCartQuery, GetShoppingCartQueryVariables> query={GetShoppingCartDocument} {...props} />
+    );
+    
+export type GetShoppingCartProps<TChildProps = {}> = ApolloReactHoc.DataProps<GetShoppingCartQuery, GetShoppingCartQueryVariables> & TChildProps;
+export function withGetShoppingCart<TProps, TChildProps = {}>(operationOptions?: ApolloReactHoc.OperationOption<
+  TProps,
+  GetShoppingCartQuery,
+  GetShoppingCartQueryVariables,
+  GetShoppingCartProps<TChildProps>>) {
+    return ApolloReactHoc.withQuery<TProps, GetShoppingCartQuery, GetShoppingCartQueryVariables, GetShoppingCartProps<TChildProps>>(GetShoppingCartDocument, {
+      alias: 'getShoppingCart',
+      ...operationOptions
+    });
+};
+
+/**
+ * __useGetShoppingCartQuery__
+ *
+ * To run a query within a React component, call `useGetShoppingCartQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetShoppingCartQuery` returns an object from Apollo Client that contains loading, error, and data properties 
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetShoppingCartQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetShoppingCartQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<GetShoppingCartQuery, GetShoppingCartQueryVariables>) {
+        return ApolloReactHooks.useQuery<GetShoppingCartQuery, GetShoppingCartQueryVariables>(GetShoppingCartDocument, baseOptions);
+      }
+export function useGetShoppingCartLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<GetShoppingCartQuery, GetShoppingCartQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<GetShoppingCartQuery, GetShoppingCartQueryVariables>(GetShoppingCartDocument, baseOptions);
+        }
+export type GetShoppingCartQueryHookResult = ReturnType<typeof useGetShoppingCartQuery>;
+export type GetShoppingCartLazyQueryHookResult = ReturnType<typeof useGetShoppingCartLazyQuery>;
+export type GetShoppingCartQueryResult = ApolloReactCommon.QueryResult<GetShoppingCartQuery, GetShoppingCartQueryVariables>;
+export const IncreaseChosenQuantityDocument = gql`
+    mutation IncreaseChosenQuantity($input: ChangeProductQuantity!) {
+  increaseChosenQuantity(input: $input) @client
+}
+    `;
+export type IncreaseChosenQuantityMutationFn = ApolloReactCommon.MutationFunction<IncreaseChosenQuantityMutation, IncreaseChosenQuantityMutationVariables>;
+export type IncreaseChosenQuantityComponentProps = Omit<ApolloReactComponents.MutationComponentOptions<IncreaseChosenQuantityMutation, IncreaseChosenQuantityMutationVariables>, 'mutation'>;
+
+    export const IncreaseChosenQuantityComponent = (props: IncreaseChosenQuantityComponentProps) => (
+      <ApolloReactComponents.Mutation<IncreaseChosenQuantityMutation, IncreaseChosenQuantityMutationVariables> mutation={IncreaseChosenQuantityDocument} {...props} />
+    );
+    
+export type IncreaseChosenQuantityProps<TChildProps = {}> = ApolloReactHoc.MutateProps<IncreaseChosenQuantityMutation, IncreaseChosenQuantityMutationVariables> & TChildProps;
+export function withIncreaseChosenQuantity<TProps, TChildProps = {}>(operationOptions?: ApolloReactHoc.OperationOption<
+  TProps,
+  IncreaseChosenQuantityMutation,
+  IncreaseChosenQuantityMutationVariables,
+  IncreaseChosenQuantityProps<TChildProps>>) {
+    return ApolloReactHoc.withMutation<TProps, IncreaseChosenQuantityMutation, IncreaseChosenQuantityMutationVariables, IncreaseChosenQuantityProps<TChildProps>>(IncreaseChosenQuantityDocument, {
+      alias: 'increaseChosenQuantity',
+      ...operationOptions
+    });
+};
+
+/**
+ * __useIncreaseChosenQuantityMutation__
+ *
+ * To run a mutation, you first call `useIncreaseChosenQuantityMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useIncreaseChosenQuantityMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [increaseChosenQuantityMutation, { data, loading, error }] = useIncreaseChosenQuantityMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useIncreaseChosenQuantityMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<IncreaseChosenQuantityMutation, IncreaseChosenQuantityMutationVariables>) {
+        return ApolloReactHooks.useMutation<IncreaseChosenQuantityMutation, IncreaseChosenQuantityMutationVariables>(IncreaseChosenQuantityDocument, baseOptions);
+      }
+export type IncreaseChosenQuantityMutationHookResult = ReturnType<typeof useIncreaseChosenQuantityMutation>;
+export type IncreaseChosenQuantityMutationResult = ApolloReactCommon.MutationResult<IncreaseChosenQuantityMutation>;
+export type IncreaseChosenQuantityMutationOptions = ApolloReactCommon.BaseMutationOptions<IncreaseChosenQuantityMutation, IncreaseChosenQuantityMutationVariables>;
 
       export interface IntrospectionResultData {
         __schema: {
